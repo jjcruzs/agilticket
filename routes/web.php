@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\TicketController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -18,16 +18,13 @@ Route::post('/register', [AutenticacionController::class, 'register'])->name('re
 
 Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout');
 
-
-// ✅ RUTA CENTRAL DEL DASHBOARD (soluciona tu error)
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
-    if (!$user) {
+    if (! $user) {
         return redirect()->route('login');
     }
 
-    // Tomamos el nombre del rol asociado al usuario
     $rol = $user->rol->nombre ?? null;
 
     if ($rol === 'admin') {
@@ -38,18 +35,14 @@ Route::get('/dashboard', function () {
         return redirect()->route('soporte.dashboard');
     }
 
-    // Si no es admin ni soporte, va al dashboard de tickets
     return redirect()->route('tickets.dashboard');
 })->middleware(['auth'])->name('dashboard');
 
-
-// ✅ Panel del administrador con datos reales
+// PANEL DEL ADMINISTRADOR
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    // Dashboard
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
-    // Usuarios
     Route::get('/admin/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
     Route::get('/admin/usuarios/crear', [AdminController::class, 'crearUsuario'])->name('admin.usuarios.crear');
     Route::post('/admin/usuarios', [AdminController::class, 'guardarUsuario'])->name('admin.usuarios.guardar');
@@ -57,23 +50,22 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/usuarios/{id}', [AdminController::class, 'actualizarUsuario'])->name('admin.usuarios.actualizar');
     Route::delete('/admin/usuarios/{id}', [AdminController::class, 'eliminarUsuario'])->name('admin.usuarios.eliminar');
 
-    // ✅ Tickets
-    Route::get('/admin/tickets', [AdminController::class, 'tickets'])->name('admin.tickets');
-    Route::get('/admin/tickets/nuevo', [AdminController::class, 'nuevoTicket'])->name('admin.tickets.nuevo');
+    Route::get('/admin/tickets', [TicketController::class, 'index'])->name('admin.tickets');
+
+    Route::get('/admin/tickets/nuevo', [TicketController::class, 'create'])->name('admin.tickets.nuevo');
+
+    Route::get('/admin/tickets/{id}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::put('/admin/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
+    Route::delete('/admin/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
 });
 
-// ✅ Panel de soporte
 Route::get('/soporte/dashboard', function () {
     return view('autenticacion.soporte');
 })->middleware('auth')->name('soporte.dashboard');
 
-// ✅ Panel de usuario normal
 Route::get('/tickets/dashboard', function () {
     return view('tickets.dashboard');
 })->middleware('auth')->name('tickets.dashboard');
 
-// ✅ Rutas de tickets
 Route::get('/tickets/nuevo', [TicketController::class, 'create'])->name('tickets.create');
 Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-
-

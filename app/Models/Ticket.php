@@ -10,7 +10,12 @@ class Ticket extends Model
     use HasFactory;
 
     protected $table = 'tickets';
-    public $timestamps = false; // ✅ porque tu tabla usa 'fecha_creacion' y no 'created_at'
+
+    protected $primaryKey = 'id';
+
+    const CREATED_AT = 'fecha_creacion';
+
+    const UPDATED_AT = 'fecha_actualizacion';
 
     protected $fillable = [
         'titulo',
@@ -19,8 +24,6 @@ class Ticket extends Model
         'estado_id',
         'solicitante_id',
         'responsable_id',
-        'fecha_creacion',
-        'fecha_actualizacion',
     ];
 
     public function estado()
@@ -38,4 +41,3 @@ class Ticket extends Model
         return $this->belongsTo(Usuario::class, 'responsable_id');
     }
 }
-

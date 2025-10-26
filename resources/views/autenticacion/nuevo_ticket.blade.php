@@ -4,7 +4,7 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-5">
 
-        <!-- Encabezado -->
+    
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-dark mb-0">Crear Nuevo Ticket</h3>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-purple">← Volver</a>
@@ -14,7 +14,7 @@
             Complete la información para crear un nuevo ticket de soporte.
         </p>
 
-        <!-- Formulario -->
+  
         <form id="formNuevoTicket" action="{{ route('tickets.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -81,7 +81,6 @@
     </div>
 </div>
 
-<!-- 🔧 Script para limpiar formulario -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const btnReset = document.getElementById("btnResetForm");
@@ -92,7 +91,7 @@
                 if (confirm("¿Deseas borrar todos los campos del formulario?")) {
                     form.reset();
 
-                    // Limpia también campos de archivos (Safari/Chrome fix)
+             
                     const inputsFile = form.querySelectorAll('input[type="file"]');
                     inputsFile.forEach(input => {
                         input.value = null;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgilTicket</title>
 
-    <!-- Bootstrap 5 -->
+   
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; }
@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<!-- Barra superior -->
+
 <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
     <div class="container">
         <a class="navbar-brand fw-bold text-dark" href="#">AGILTICKET</a>
@@ -35,7 +35,7 @@
     </div>
 </nav>
 
-<!-- Contenido principal -->
+
 <div class="container my-5">
     @yield('content')
 </div>

@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-    <!-- Navbar -->
+
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">AgilTicket</a>
@@ -56,14 +56,13 @@
     </nav>
 
     <div class="container mt-4">
-        <!-- Mensaje de éxito -->
+
         @if (session('success'))
             <div class="alert alert-success text-center">
                 {{ session('success') }}
             </div>
         @endif
 
-        <!-- Menú superior -->
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item"><a class="nav-link active" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.tickets.nuevo') }}">Nuevo Ticket</a></li>
@@ -71,7 +70,7 @@
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios') }}">Usuarios</a></li>
         </ul>
 
-        <!-- Estadísticas -->
+
         <div class="row text-center mb-4">
             <div class="col-md-3">
                 <div class="card-stat">
@@ -99,10 +98,9 @@
             </div>
         </div>
 
-        <!-- Tickets recientes -->
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Tickets Recientes</h4>
-            <a href="{{ route('admin.tickets.nuevo') }}" class="btn fw-semibold rounded-pill px-3 text-white" style="background-color: #4f46e5;">Nuevo Ticket</a>
+            <a href="{{ route('admin.tickets.nuevo') }}" class="btn fw-semibold rounded-pill px-3 text-white" style="background-color: #4f46e5;">Crear Ticket</a>
         </div>
 
         @foreach ($recientes as $ticket)
