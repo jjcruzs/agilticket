@@ -40,13 +40,13 @@
                 </div>
 
                 <div class="mb-3">
-    <label class="form-label">Rol</label>
-    <select name="rol_id" class="form-control" required>
-        @foreach($roles as $rol)
-            <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
-        @endforeach
-    </select>
-</div>
+                    <label class="form-label">Rol</label>
+                    <select name="rol_id" class="form-select" required>
+                    @foreach($roles as $rol)
+                    <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                    @endforeach
+                    </select>
+                </div>
 
                 <button type="submit" class="btn btn-primary w-100">Registrarse</button>
 

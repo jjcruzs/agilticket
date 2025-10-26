@@ -16,18 +16,29 @@ class AutenticacionController extends Controller
         return view('autenticacion.login');
     }
 
-    // Login
     public function login(Request $request)
-    {
-        $credentials = $request->only('correo', 'password');
+{
+    $credentials = $request->only('correo', 'password');
 
-        if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard');
+    if (Auth::attempt(['correo' => $credentials['correo'], 'password' => $credentials['password']])) {
+        $request->session()->regenerate();
+
+        $usuario = Auth::user();
+
+        // 🔁 Redirigir según el rol numérico
+        switch ($usuario->rol_id) {
+            case 1: // Administrador
+                return redirect()->route('admin.dashboard');
+            case 2: // Soporte
+                return redirect()->route('soporte.dashboard');
+            case 3: // Usuario normal
+            default:
+                return redirect()->route('tickets.dashboard');
         }
-
-        return back()->withErrors(['correo' => 'Correo o contraseña incorrectos']);
     }
+
+    return back()->withErrors(['correo' => 'Correo o contraseña incorrectos']);
+}
 
     // Mostrar formulario de registro
     public function showRegister()
@@ -38,29 +49,37 @@ class AutenticacionController extends Controller
 
     // Registrar usuario
     public function register(Request $request)
-    {
-        // Validación
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'correo' => 'required|string|email|max:255|unique:usuarios,correo',
-            'password' => 'required|string', // ✅ Sin restricciones de longitud
-            'rol_id' => 'required|exists:roles,id', // valida que el rol exista
-        ]);
+{
+    // Validación
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'correo' => 'required|string|email|max:255|unique:usuarios,correo',
+        'password' => 'required|string',
+        'rol_id' => 'required|exists:roles,id',
+    ]);
 
-        // Crear usuario con contraseña hasheada
-        $usuario = User::create([
-            'nombre' => $request->nombre,
-            'correo' => $request->correo,
-            'password' => Hash::make($request->password),
-            'rol_id' => $request->rol_id,
-        ]);
+    // Crear usuario con contraseña hasheada
+    $usuario = User::create([
+        'nombre' => $request->nombre,
+        'correo' => $request->correo,
+        'password' => Hash::make($request->password),
+        'rol_id' => $request->rol_id,
+    ]);
 
-        // Login automático
-        Auth::login($usuario);
+    // Login automático
+    Auth::login($usuario);
 
-        // Redirigir al dashboard
-        return redirect()->route('dashboard');
+    // 🔁 Redirigir según el rol
+    switch ($usuario->rol_id) {
+        case 1: // Administrador
+            return redirect()->route('admin.dashboard');
+        case 2: // Soporte
+            return redirect()->route('soporte.dashboard');
+        case 3: // Usuario normal
+        default:
+            return redirect()->route('tickets.dashboard');
     }
+}
 
     // Logout
     public function logout(Request $request)
