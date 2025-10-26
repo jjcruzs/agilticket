@@ -10,12 +10,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            // 🔁 Redirección por defecto después del login
+
             Illuminate\Support\Facades\Route::redirect('/dashboard', '/');
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // 🧩 Alias de middlewares personalizados
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
@@ -23,5 +23,3 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
-
-
