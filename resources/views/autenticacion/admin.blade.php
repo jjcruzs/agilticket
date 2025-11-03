@@ -68,6 +68,8 @@
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.tickets.nuevo') }}">Nuevo Ticket</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.tickets') }}">Tickets</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios') }}">Usuarios</a></li>
+            <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.reportes') ? 'active' : '' }}" href="{{ route('admin.reportes') }}">Reportes</a>
+    </li>
         </ul>
 
 
