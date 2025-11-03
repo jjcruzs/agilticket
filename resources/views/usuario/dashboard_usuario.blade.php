@@ -13,7 +13,7 @@
 
     <h4>Tickets Recientes</h4>
     @if($ticketsRecientes->isEmpty())
-        <div class="alert alert-info">No hay tickets recientes.</div>
+        <div class="alert alert-info">No hay tickets recientes. PRUEBA DE QUE FUNCIONA</div>
     @else
         <ul>
             @foreach ($ticketsRecientes as $ticket)
