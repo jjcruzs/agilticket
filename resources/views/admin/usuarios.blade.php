@@ -3,7 +3,6 @@
 @section('content')
 <div class="container py-4">
 
-    <!-- Encabezado con botón "Volver al Dashboard" -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold text-dark mb-1">Gestión de Usuarios</h3>
@@ -15,7 +14,9 @@
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div id="alert-success" class="alert alert-success text-center fw-bold">
+            {{ session('success') }}
+        </div>
     @endif
 
     <div class="card shadow-sm border-0">
@@ -52,11 +53,27 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center text-muted">No hay usuarios registrados</td></tr>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No hay usuarios registrados</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+@if(session('success'))
+<script>
+    setTimeout(() => {
+        const alert = document.getElementById('alert-success');
+        if (alert) {
+            alert.style.transition = 'opacity 0.5s';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        }
+    }, 2500);
+</script>
+@endif
+
 @endsection

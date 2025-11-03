@@ -11,7 +11,7 @@ class Ticket extends Model
 
     protected $table = 'tickets';
 
-    protected $primaryKey = 'id';
+    public $timestamps = true;
 
     const CREATED_AT = 'fecha_creacion';
 
@@ -26,9 +26,9 @@ class Ticket extends Model
         'responsable_id',
     ];
 
-    public function estado()
+    public function respuestas()
     {
-        return $this->belongsTo(Estado::class, 'estado_id');
+        return $this->hasMany(Respuesta::class, 'ticket_id');
     }
 
     public function solicitante()
@@ -39,5 +39,10 @@ class Ticket extends Model
     public function responsable()
     {
         return $this->belongsTo(Usuario::class, 'responsable_id');
+    }
+
+    public function estado()
+    {
+        return $this->belongsTo(Estado::class, 'estado_id');
     }
 }
