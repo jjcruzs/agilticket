@@ -3,22 +3,23 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\TicketController;
-use App\Models\Ticket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Models\Ticket;
 
+// 🔹 Redirección inicial
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// 🔹 Autenticación
 Route::get('/login', [AutenticacionController::class, 'showLogin'])->name('login');
 Route::post('/login', [AutenticacionController::class, 'login'])->name('login.post');
-
 Route::get('/register', [AutenticacionController::class, 'showRegister'])->name('register');
 Route::post('/register', [AutenticacionController::class, 'register'])->name('register.post');
-
 Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout');
 
+// 🔹 Dashboard dinámico según rol
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
@@ -26,21 +27,22 @@ Route::get('/dashboard', function () {
         return redirect()->route('login');
     }
 
-    $rol = strtolower($user->rol->nombre ?? '');
-
-    if (in_array($rol, ['admin', 'administrador'])) {
-        return redirect()->route('admin.dashboard');
-    } elseif ($rol === 'soporte') {
-        return redirect()->route('soporte.dashboard');
-    } else {
-        return redirect()->route('tickets.dashboard');
+    switch ($user->rol_id) {
+        case 1:
+            return redirect()->route('admin.dashboard');
+        case 2:
+            return redirect()->route('usuario.dashboard_usuario');
+        case 3:
+            return redirect()->route('soporte.dashboard');
+        default:
+            return redirect()->route('login');
     }
 })->middleware(['auth'])->name('dashboard');
 
-// PANEL DEL ADMINISTRADOR
-
+// =======================
+// 🟣 PANEL ADMINISTRADOR
+// =======================
 Route::middleware(['auth', 'admin'])->group(function () {
-
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     Route::get('/admin/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
@@ -57,24 +59,26 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/tickets/{id}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
     Route::put('/admin/tickets/{id}', [TicketController::class, 'update'])->name('tickets.update');
     Route::delete('/admin/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
-
     Route::post('/admin/tickets/{id}/responder', [TicketController::class, 'responder'])->name('tickets.responder');
 
     Route::get('/admin/reportes', [AdminController::class, 'reportForm'])->name('admin.reportes');
     Route::post('/admin/reportes/generar', [AdminController::class, 'generateReport'])->name('admin.reportes.generar');
 });
 
-// PANEL DE SOPORTE
-
+// =======================
+// 🟡 PANEL SOPORTE
+// =======================
 Route::middleware(['auth'])->group(function () {
     Route::get('/soporte/dashboard', function () {
-        return view('autenticacion.soporte');
+        return view('soporte.dashboard_soporte');
     })->name('soporte.dashboard');
 });
 
+// =======================
+// 🟢 PANEL USUARIO (TICKETS)
+// =======================
 Route::middleware(['auth'])->group(function () {
-
-    Route::get('/tickets/dashboard', function () {
+    Route::get('/usuario/dashboard_usuario', function () {
         $usuario = Auth::user();
 
         if (! $usuario) {
@@ -92,14 +96,14 @@ Route::middleware(['auth'])->group(function () {
             ->take(5)
             ->get();
 
-        return view('tickets.dashboard', compact(
+        return view('usuario.dashboard_usuario', compact(
             'pendientes',
             'enProceso',
             'resueltos',
             'total',
             'ticketsRecientes'
         ));
-    })->name('tickets.dashboard');
+    })->name('usuario.dashboard_usuario');
 
     Route::get('/tickets/nuevo', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');

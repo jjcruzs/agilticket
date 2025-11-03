@@ -83,15 +83,15 @@
         @endif
 
         <form 
-            action="{{ route('register') }}" 
+            action="{{ route('register.post') }}" 
             method="POST" 
             autocomplete="off"
             id="registerForm"
         >
             @csrf
 
+            <!-- Campo oculto para evitar sugerencias de autocompletado -->
             <input type="password" style="display:none">
-
 
             <div class="mb-3 text-start">
                 <label class="form-label fw-semibold">Nombre completo</label>
@@ -148,6 +148,9 @@
                 <span class="toggle-password" onclick="togglePassword(this)"></span>
             </div>
 
+            <!-- 👇 Campo oculto que asigna el rol automáticamente como "Usuario" -->
+            <input type="hidden" name="rol_id" value="2">
+
             <button type="submit" class="btn btn-register w-100 py-2">Registrarme</button>
 
             <p class="mt-3 text-muted">
@@ -158,12 +161,10 @@
     </div>
 
     <script>
-
         function togglePassword(icon) {
             const input = icon.previousElementSibling;
             input.type = input.type === 'password' ? 'text' : 'password';
         }
-
 
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('input[type="password"]').forEach(el => {
