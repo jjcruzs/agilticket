@@ -7,23 +7,41 @@
         <a href="{{ route('admin.dashboard') }}" class="btn btn-purple">← Volver</a>
     </div>
 
+    <form method="GET" action="{{ route('admin.tickets') }}" class="mb-4 d-flex align-items-center gap-3 flex-wrap">
+        <div>
+            <label for="estado_id" class="form-label mb-1">Filtrar por Estado:</label>
+            <select name="estado_id" id="estado_id" class="form-select">
+                <option value="">Todos</option>
+                @foreach($estados as $estado)
+                    <option value="{{ $estado->id }}" {{ $estadoFiltro == $estado->id ? 'selected' : '' }}>
+                        {{ $estado->nombre }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-    <form method="GET" action="{{ route('admin.tickets') }}" class="mb-4 d-flex align-items-center">
-        <label for="estado_id" class="form-label me-2 fw-semibold">Filtrar por estado:</label>
-        <select name="estado_id" id="estado_id" class="form-select w-auto me-2 rounded-3">
-            <option value="">Todos</option>
-            @foreach($estados as $estado)
-                <option value="{{ $estado->id }}" 
-                    {{ request('estado_id') == $estado->id ? 'selected' : '' }}>
-                    {{ $estado->nombre }}
-                </option>
-            @endforeach
-        </select>
-        <button type="submit" class="btn btn-purple rounded-pill px-4">Filtrar</button>
+        <div>
+            <label for="responsable_id" class="form-label mb-1">Filtrar por Responsable:</label>
+            <select name="responsable_id" id="responsable_id" class="form-select">
+                <option value="">Todos</option>
+                @foreach($responsables as $responsable)
+                    <option value="{{ $responsable->id }}" {{ $responsableFiltro == $responsable->id ? 'selected' : '' }}>
+                        {{ $responsable->nombre }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-        @if(request()->filled('estado_id'))
-            <a href="{{ route('admin.tickets') }}" class="btn btn-outline-secondary rounded-pill px-4 ms-2">Quitar filtro</a>
-        @endif
+        <div>
+            <label for="radicado" class="form-label mb-1">Buscar por Radicado:</label>
+            <input type="text" name="radicado" id="radicado" class="form-control"
+                placeholder="Ej: TCK-0003" value="{{ $radicadoFiltro }}">
+        </div>
+
+        <div class="align-self-end">
+            <button type="submit" class="btn btn-purple">Filtrar</button>
+            <a href="{{ route('admin.tickets') }}" class="btn btn-outline-secondary">Limpiar</a>
+        </div>
     </form>
 
     <div class="card shadow-sm border-0 rounded-4 p-4">
@@ -31,6 +49,7 @@
             <thead>
                 <tr class="text-center text-secondary">
                     <th>ID</th>
+                    <th>Radicado</th>
                     <th>Título</th>
                     <th>Prioridad</th>
                     <th>Estado</th>
@@ -44,6 +63,7 @@
                 @forelse($tickets as $ticket)
                     <tr class="text-center">
                         <td>#{{ $ticket->id }}</td>
+                        <td class="fw-semibold text-purple text-truncate">{{ $ticket->radicado ?? 'N/A' }}</td>
                         <td class="text-start">{{ $ticket->titulo }}</td>
 
                         <td>
@@ -56,7 +76,6 @@
                             </span>
                         </td>
 
-  
                         <td>
                             @php
                                 $nombreEstado = $ticket->estado->nombre ?? 'Sin estado';
@@ -71,10 +90,10 @@
                                 {{ $nombreEstado }}
                             </span>
                         </td>
-                        <td>{{ $ticket->solicitante->nombre ?? 'Desconocido' }}</td>
-                        <td>{{ $ticket->responsable->nombre ?? 'Sin asignar' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y H:i') }}</td>
 
+                        <td class="text-truncate">{{ $ticket->solicitante->nombre ?? 'Desconocido' }}</td>
+                        <td class="text-truncate">{{ $ticket->responsable->nombre ?? 'Sin asignar' }}</td>
+                        <td class="text-truncate">{{ \Carbon\Carbon::parse($ticket->fecha_creacion)->format('d/m/Y H:i') }}</td>
 
                         <td>
                             <div class="d-flex justify-content-center gap-2">
@@ -91,7 +110,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-4">
+                        <td colspan="9" class="text-center text-muted py-4">
                             No hay tickets registrados para este filtro.
                         </td>
                     </tr>
@@ -100,4 +119,16 @@
         </table>
     </div>
 </div>
+
+<style>
+.text-purple { color: #6a11cb; }
+.btn-purple {
+    background-color: #6a11cb;
+    color: white;
+    transition: all 0.2s ease;
+}
+.btn-purple:hover {
+    background-color: #4f46e5;
+}
+</style>
 @endsection

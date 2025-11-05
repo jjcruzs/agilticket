@@ -14,10 +14,10 @@ class Ticket extends Model
     public $timestamps = true;
 
     const CREATED_AT = 'fecha_creacion';
-
     const UPDATED_AT = 'fecha_actualizacion';
 
     protected $fillable = [
+        'radicado',
         'titulo',
         'descripcion',
         'prioridad',
@@ -25,6 +25,24 @@ class Ticket extends Model
         'solicitante_id',
         'responsable_id',
     ];
+
+    // ==========================
+    // 🔹 GENERAR RADICADO AUTO (TCK-0001, TCK-0002, etc.)
+    // ==========================
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($ticket) {
+            $ultimo = self::latest('id')->first();
+            $numero = $ultimo ? $ultimo->id + 1 : 1;
+            $ticket->radicado = 'TCK-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+        });
+    }
+
+    // ==========================
+    // 🔹 RELACIONES
+    // ==========================
 
     public function respuestas()
     {
