@@ -3,23 +3,29 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UsuarioDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Models\Ticket;
 
+// =======================
 // 🔹 Redirección inicial
+// =======================
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// =======================
 // 🔹 Autenticación
+// =======================
 Route::get('/login', [AutenticacionController::class, 'showLogin'])->name('login');
 Route::post('/login', [AutenticacionController::class, 'login'])->name('login.post');
 Route::get('/register', [AutenticacionController::class, 'showRegister'])->name('register');
 Route::post('/register', [AutenticacionController::class, 'register'])->name('register.post');
 Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout');
 
+// =======================
 // 🔹 Dashboard dinámico según rol
+// =======================
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
@@ -78,33 +84,12 @@ Route::middleware(['auth'])->group(function () {
 // 🟢 PANEL USUARIO (TICKETS)
 // =======================
 Route::middleware(['auth'])->group(function () {
-    Route::get('/usuario/dashboard_usuario', function () {
-        $usuario = Auth::user();
+    // ✅ Controlador centralizado con filtros y contadores
+    Route::get('/usuario/dashboard_usuario', [UsuarioDashboardController::class, 'index'])
+        ->name('usuario.dashboard_usuario');
 
-        if (! $usuario) {
-            return redirect()->route('login');
-        }
-
-        $pendientes = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 1)->count();
-        $enProceso = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 2)->count();
-        $resueltos = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 3)->count();
-        $total = Ticket::where('solicitante_id', $usuario->id)->count();
-
-        $ticketsRecientes = Ticket::where('solicitante_id', $usuario->id)
-            ->with('estado')
-            ->latest()
-            ->take(5)
-            ->get();
-
-        return view('usuario.dashboard_usuario', compact(
-            'pendientes',
-            'enProceso',
-            'resueltos',
-            'total',
-            'ticketsRecientes'
-        ));
-    })->name('usuario.dashboard_usuario');
-
+    // ✅ Crear y ver tickets
     Route::get('/tickets/nuevo', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{id}/ver', [TicketController::class, 'show'])->name('tickets.ver');
 });

@@ -65,6 +65,7 @@
         <p class="text-muted">Aún no hay respuestas para este ticket.</p>
     @endif
 
+    {{-- 
     <div class="card shadow-sm border-0 rounded-4 p-4 mt-4">
         <h5 class="fw-semibold mb-3">Responder al Ticket</h5>
         <form action="{{ route('tickets.responder', $ticket->id) }}" method="POST">
@@ -89,5 +90,6 @@
             <button type="submit" class="btn btn-primary rounded-pill px-4">Enviar respuesta</button>
         </form>
     </div>
+    --}}
 </div>
 @endsection
