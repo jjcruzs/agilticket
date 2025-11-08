@@ -1,8 +1,8 @@
 @extends('layouts.app')
-
+ 
 @section('content')
 <div class="container mt-4">
-    <!-- Encabezado -->
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary">
             <i class="bi bi-speedometer2 me-2"></i> Dashboard de Tickets (USUARIO)
@@ -11,8 +11,8 @@
             <i class="bi bi-plus-circle me-1"></i> Nuevo Ticket
         </a>
     </div>
-
-    <!-- Resumen de tickets -->
+ 
+    
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-warning shadow-sm">
@@ -47,8 +47,8 @@
             </div>
         </div>
     </div>
-
-    <!-- Sección: Crear Ticket -->
+ 
+    
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-success text-white fw-semibold">
             <i class="bi bi-pencil-square me-2"></i> Crear Ticket
@@ -64,8 +64,8 @@
             </a>
         </div>
     </div>
-
-    <!-- Sección: Mis Tickets -->
+ 
+    
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white fw-semibold">
             <i class="bi bi-search me-2"></i> Mis Tickets
@@ -73,13 +73,13 @@
         <div class="card-body">
             <p class="text-muted mb-3">
              
-
-
-
-
+ 
+ 
+ 
+ 
             </p>
-
-            <!-- Tickets recientes -->
+ 
+            
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-primary text-white fw-semibold">
                     <i class="bi bi-ticket-detailed me-2"></i> Tickets Recientes
@@ -97,7 +97,7 @@
                                         <strong>{{ $ticket->titulo }}</strong><br>
                                         <small class="text-muted">
                                             <strong>Radicado:</strong> {{ $ticket->radicado ?? '—' }}<br>
-                                            Estado: 
+                                            Estado:
                                             @if($ticket->estado->nombre == 'Pendiente')
                                                 <span class="badge bg-warning text-dark">{{ $ticket->estado->nombre }}</span>
                                             @elseif($ticket->estado->nombre == 'En Proceso')
@@ -110,7 +110,7 @@
                                         </small>
                                     </div>
                                     <a href="{{ route('tickets.ver.usuario', $ticket->id) }}" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye"></i> 
+                                        <i class="bi bi-eye"></i>
                                     </a>
                                 </li>
                             @endforeach
@@ -120,8 +120,8 @@
             </div>
         </div>
     </div>
-
-    <!-- Módulo: Historial de Tickets con filtros -->
+ 
+    
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-dark text-white fw-semibold">
             <i class="bi bi-clock-history me-2"></i> Historial de Tickets
@@ -153,7 +153,7 @@
                     </div>
                 </div>
             </form>
-
+ 
             @if($historialTickets->isEmpty())
                 <div class="alert alert-info text-center">
                     <i class="bi bi-info-circle me-2"></i> No se encontraron tickets con los filtros aplicados.
@@ -175,7 +175,7 @@
                                 <td><strong>{{ $ticket->radicado ?? '—' }}</strong></td>
                                 <td>{{ $ticket->titulo }}</td>
                                 <td>
-                                    <span class="badge 
+                                    <span class="badge
                                         @if($ticket->estado->nombre == 'Pendiente') bg-warning text-dark
                                         @elseif($ticket->estado->nombre == 'En Proceso') bg-info text-dark
                                         @elseif($ticket->estado->nombre == 'Resuelto') bg-success
@@ -185,7 +185,7 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($ticket->fecha_creacion)->format('Y-m-d') }}</td>
                                 <td>
-                                    <a href="{{ route('tickets.ver.usuario', $ticket->id) }}" 
+                                    <a href="{{ route('tickets.ver.usuario', $ticket->id) }}"
                                        class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>

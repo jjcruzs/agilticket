@@ -26,7 +26,7 @@ class Ticket extends Model
         'radicado',
     ];
 
-    protected static function booted()
+    protected static function boot()
     {
         static::creating(function ($ticket) {
             if (empty($ticket->radicado)) {

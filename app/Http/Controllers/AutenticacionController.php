@@ -29,7 +29,7 @@ class AutenticacionController extends Controller
                 case 2:
                     return redirect()->route('usuario.dashboard_usuario');
                 case 3:
-                    return redirect()->route('soporte.dashboard');
+                    return redirect()->route('soporte.dashboard_soporte');
                 default:
                     Auth::logout();
                     return redirect()->route('login')->withErrors(['error' => 'Rol no válido']);
@@ -40,7 +40,7 @@ class AutenticacionController extends Controller
     }
 
     public function showRegister()
-    {
+    {        
         return view('autenticacion.register');
     }
 
@@ -51,8 +51,8 @@ class AutenticacionController extends Controller
             'correo' => 'required|string|email|max:255|unique:usuarios,correo',
             'password' => 'required|string|min:6|confirmed',
         ]);
-
-        $usuario = Usuario::create([
+        
+        $usuario = User::create([
             'nombre' => $request->nombre,
             'correo' => $request->correo,
             'password' => Hash::make($request->password),

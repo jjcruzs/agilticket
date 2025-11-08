@@ -1,31 +1,26 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UsuarioDashboardController;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UsuarioDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// =======================
-// 🔹 Redirección inicial
-// =======================
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// =======================
-// 🔹 Autenticación
-// =======================
+
 Route::get('/login', [AutenticacionController::class, 'showLogin'])->name('login');
 Route::post('/login', [AutenticacionController::class, 'login'])->name('login.post');
 Route::get('/register', [AutenticacionController::class, 'showRegister'])->name('register');
 Route::post('/register', [AutenticacionController::class, 'register'])->name('register.post');
 Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout');
 
-// =======================
-// 🔹 Dashboard dinámico según rol
-// =======================
+
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
@@ -39,15 +34,13 @@ Route::get('/dashboard', function () {
         case 2:
             return redirect()->route('usuario.dashboard_usuario');
         case 3:
-            return redirect()->route('soporte.dashboard');
+            return redirect()->route('soporte.dashboard_soporte');
         default:
             return redirect()->route('login');
     }
 })->middleware(['auth'])->name('dashboard');
 
-// =======================
-// 🟣 PANEL ADMINISTRADOR
-// =======================
+
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
@@ -74,28 +67,43 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/reportes/generar', [AdminController::class, 'generateReport'])->name('admin.reportes.generar');
 });
 
-// =======================
-// 🟡 PANEL SOPORTE
-// =======================
-Route::middleware(['auth'])->group(function () {
-    Route::get('/soporte/dashboard', function () {
-        return view('soporte.dashboard_soporte');
-    })->name('soporte.dashboard');
+
+use App\Http\Controllers\SoporteController;
+
+Route::prefix('soporte')->middleware('auth')->group(function () {
+
+    
+    Route::get('/dashboard', [SoporteController::class, 'dashboard'])
+        ->name('soporte.dashboard_soporte');
+
+    
+    Route::get('/tickets', [SoporteController::class, 'index'])
+        ->name('soporte.tickets');
+
+    
+    Route::get('/tickets/{ticket}', [SoporteController::class, 'show'])
+        ->name('soporte.tickets.show');
+
+    
+    Route::post('/tickets/{ticket}/responder', [SoporteController::class, 'responder'])
+        ->name('soporte.tickets.responder');
+
+    
+    Route::post('/tickets/{ticket}/resolver', [SoporteController::class, 'resolver'])
+        ->name('soporte.tickets.resolver');
 });
 
-// =======================
-// 🟢 PANEL USUARIO (TICKETS)
-// =======================
+
+
 Route::middleware(['auth'])->group(function () {
-    // 🔹 Dashboard del usuario
+    
     Route::get('/usuario/dashboard_usuario', [UsuarioDashboardController::class, 'index'])
         ->name('usuario.dashboard_usuario');
-
-    // 🔹 Crear ticket (usuario)
+ 
+    
     Route::get('/tickets/nuevo', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-
-    // 🔹 Ver detalle del ticket (usa tu vista show_usuario.blade.php)
+ 
+    
     Route::get('/tickets/{id}/ver', [TicketController::class, 'showUsuario'])->name('tickets.ver.usuario');
 });
-
