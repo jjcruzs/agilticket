@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -56,7 +56,7 @@ class AutenticacionController extends Controller
             'nombre' => $request->nombre,
             'correo' => $request->correo,
             'password' => Hash::make($request->password),
-            'rol_id' => 2,
+            'rol_id' => 2, // Usuario por defecto
         ]);
 
         Auth::login($usuario);

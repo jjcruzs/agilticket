@@ -118,13 +118,7 @@ class TicketController extends Controller
             'prioridad' => 'nullable|string',
         ]);
 
-        $ticket->update([
-            'titulo' => $request->titulo ?? $ticket->titulo,
-            'descripcion' => $request->descripcion ?? $ticket->descripcion,
-            'prioridad' => $request->prioridad ?? $ticket->prioridad,
-            'estado_id' => $request->estado_id ?? $ticket->estado_id,
-            'responsable_id' => $request->responsable_id ?? $ticket->responsable_id,
-        ]);
+        $ticket->update($request->only(['estado_id', 'responsable_id']));
 
         return redirect()->route('admin.tickets')->with('success','Ticket actualizado correctamente.');
     }
