@@ -55,14 +55,9 @@
         </div>
         <div class="card-body">
             <p class="text-muted">
-                <strong>Propósito:</strong> Permitir al usuario registrar una solicitud o incidencia.<br>
-                <strong>Flujo principal:</strong><br>
-                1. El solicitante ingresa al sistema.<br>
-                2. Selecciona <span class="text-primary">"Crear Ticket"</span>.<br>
-                3. Completa los campos del formulario.<br>
-                4. El sistema valida la información.<br>
-                5. El ticket se registra con estado <span class="badge bg-warning text-dark">Pendiente</span>.<br><br>
-                <strong>Salida:</strong> Confirmación del ticket con número de radicado.
+                 <p> Bienvenido !! </p>
+                 Aqui puedes seleccionar <span class="text-primary">"Crear Ticket"</span>.<br>
+               
             </p>
             <a href="{{ route('tickets.create') }}" class="btn btn-success">
                 <i class="bi bi-plus-circle me-1"></i> Ir a Crear Ticket
@@ -77,12 +72,11 @@
         </div>
         <div class="card-body">
             <p class="text-muted mb-3">
-                <strong>Propósito:</strong> Permitir visualizar los tickets asociados al usuario.<br>
-                <strong>Flujo principal:</strong><br>
-                1. El usuario accede a la opción <span class="text-primary">"Mis Tickets"</span>.<br>
-                2. El sistema muestra los tickets con filtros de estado, fecha o responsable.<br>
-                3. Se asigna un agente de soporte del listado disponible.<br>
-                4. El usuario puede seleccionar un ticket para ver su detalle.
+             
+
+
+
+
             </p>
 
             <!-- Tickets recientes -->
@@ -115,7 +109,7 @@
                                             @endif
                                         </small>
                                     </div>
-                                    <a href="{{ route('tickets.ver', $ticket->id) }}" class="btn btn-outline-primary btn-sm">
+                                    <a href="{{ route('tickets.ver.usuario', $ticket->id) }}" class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-eye"></i> 
                                     </a>
                                 </li>
@@ -191,7 +185,7 @@
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($ticket->fecha_creacion)->format('Y-m-d') }}</td>
                                 <td>
-                                    <a href="{{ route('tickets.ver', $ticket->id) }}" 
+                                    <a href="{{ route('tickets.ver.usuario', $ticket->id) }}" 
                                        class="btn btn-outline-primary btn-sm">
                                         <i class="bi bi-eye"></i> Ver
                                     </a>

@@ -68,7 +68,8 @@ class TicketController extends Controller
         }
     }
 
-    public function show($id)
+    // 🔹 Vista detalle del ticket para ADMIN
+    public function showAdmin($id)
     {
         $ticket = Ticket::with([
             'estado',
@@ -81,6 +82,26 @@ class TicketController extends Controller
         $estados = Estado::all();
 
         return view('tickets.show', compact('ticket', 'estados'));
+    }
+
+    // 🔹 Vista detalle del ticket para USUARIO (usa tu vista existente)
+    public function showUsuario($id)
+    {
+        $ticket = Ticket::with([
+            'estado',
+            'solicitante',
+            'responsable',
+            'respuestas.usuario',
+            'respuestas.estado',
+        ])->findOrFail($id);
+
+        // Validar que el ticket pertenezca al usuario autenticado
+        if ($ticket->solicitante_id != Auth::id()) {
+            abort(403, 'No tienes permiso para ver este ticket.');
+        }
+
+        // Usa tu vista existente
+        return view('usuario.show_usuario', compact('ticket'));
     }
 
     public function update(Request $request, $id)
@@ -130,8 +151,6 @@ class TicketController extends Controller
 
         $ticket->update(['estado_id' => $request->estado_id]);
 
-        return redirect()->route('tickets.show', $ticket->id)
-            ->with('success', 'Respuesta agregada correctamente.');
+        return redirect()->back()->with('success', 'Respuesta agregada correctamente.');
     }
 }
-
