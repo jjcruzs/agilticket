@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <!-- Sección: Consultar Tickets -->
+    <!-- Sección: Mis Tickets -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white fw-semibold">
             <i class="bi bi-search me-2"></i> Mis Tickets
@@ -93,7 +93,7 @@
                 <div class="card-body">
                     @if($ticketsRecientes->isEmpty())
                         <div class="alert alert-info mb-0 text-center">
-                            <i class="bi bi-info-circle me-2"></i> No hay tickets recientes. <strong>PRUEBA DE QUE FUNCIONA</strong>
+                            <i class="bi bi-info-circle me-2"></i> No hay tickets recientes.
                         </div>
                     @else
                         <ul class="list-group list-group-flush">
@@ -102,20 +102,21 @@
                                     <div>
                                         <strong>{{ $ticket->titulo }}</strong><br>
                                         <small class="text-muted">
+                                            <strong>Radicado:</strong> {{ $ticket->radicado ?? '—' }}<br>
                                             Estado: 
-                                            @if($ticket->estado == 'Pendiente')
-                                                <span class="badge bg-warning text-dark">{{ $ticket->estado }}</span>
-                                            @elseif($ticket->estado == 'En Proceso')
-                                                <span class="badge bg-info text-dark">{{ $ticket->estado }}</span>
-                                            @elseif($ticket->estado == 'Resuelto')
-                                                <span class="badge bg-success">{{ $ticket->estado }}</span>
+                                            @if($ticket->estado->nombre == 'Pendiente')
+                                                <span class="badge bg-warning text-dark">{{ $ticket->estado->nombre }}</span>
+                                            @elseif($ticket->estado->nombre == 'En Proceso')
+                                                <span class="badge bg-info text-dark">{{ $ticket->estado->nombre }}</span>
+                                            @elseif($ticket->estado->nombre == 'Resuelto')
+                                                <span class="badge bg-success">{{ $ticket->estado->nombre }}</span>
                                             @else
-                                                <span class="badge bg-secondary">{{ $ticket->estado }}</span>
+                                                <span class="badge bg-secondary">{{ $ticket->estado->nombre }}</span>
                                             @endif
                                         </small>
                                     </div>
-                                    <a href="#" class="btn btn-outline-primary btn-sm">
-                                        <i class="bi bi-eye"></i> Ver
+                                    <a href="{{ route('tickets.ver', $ticket->id) }}" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> 
                                     </a>
                                 </li>
                             @endforeach
@@ -128,78 +129,79 @@
 
     <!-- Módulo: Historial de Tickets con filtros -->
     <div class="card shadow-sm mb-5">
-    <div class="card-header bg-dark text-white fw-semibold">
-        <i class="bi bi-clock-history me-2"></i> Historial de Tickets
-    </div>
-    <div class="card-body">
-        <form method="GET" action="{{ route('usuario.dashboard_usuario') }}">
-            <div class="row g-3 mb-3">
-                <div class="col-md-3">
-                    <input type="text" name="titulo" class="form-control"
-                        placeholder="Buscar por título..." value="{{ $titulo }}">
+        <div class="card-header bg-dark text-white fw-semibold">
+            <i class="bi bi-clock-history me-2"></i> Historial de Tickets
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ route('usuario.dashboard_usuario') }}">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <input type="text" name="titulo" class="form-control"
+                            placeholder="Buscar por título..." value="{{ $titulo }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="estado_id" class="form-select">
+                            <option value="">Filtrar por estado</option>
+                            @foreach($estados as $estado)
+                                <option value="{{ $estado->id }}" {{ $estadoFiltro == $estado->id ? 'selected' : '' }}>
+                                    {{ $estado->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="date" name="fecha" class="form-control" value="{{ $fecha }}">
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-funnel me-1"></i> Filtrar
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <select name="estado_id" class="form-select">
-                        <option value="">Filtrar por estado</option>
-                        @foreach($estados as $estado)
-                            <option value="{{ $estado->id }}" {{ $estadoFiltro == $estado->id ? 'selected' : '' }}>
-                                {{ $estado->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="date" name="fecha" class="form-control" value="{{ $fecha }}">
-                </div>
-                <div class="col-md-3 text-end">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-funnel me-1"></i> Filtrar
-                    </button>
-                </div>
-            </div>
-        </form>
+            </form>
 
-        @if($historialTickets->isEmpty())
-            <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle me-2"></i> No se encontraron tickets con los filtros aplicados.
-            </div>
-        @else
-            <table class="table table-striped align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Título</th>
-                        <th>Estado</th>
-                        <th>Fecha</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($historialTickets as $ticket)
+            @if($historialTickets->isEmpty())
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle me-2"></i> No se encontraron tickets con los filtros aplicados.
+                </div>
+            @else
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
                         <tr>
-                            <td>{{ $ticket->id }}</td>
-                            <td>{{ $ticket->titulo }}</td>
-                            <td>
-                                <span class="badge 
-                                    @if($ticket->estado->nombre == 'Pendiente') bg-warning text-dark
-                                    @elseif($ticket->estado->nombre == 'En Proceso') bg-info text-dark
-                                    @elseif($ticket->estado->nombre == 'Resuelto') bg-success
-                                    @else bg-secondary @endif">
-                                    {{ $ticket->estado->nombre }}
-                                </span>
-                            </td>
-                            <td>{{ \Carbon\Carbon::parse($ticket->fecha_creacion)->format('Y-m-d') }}</td>
-                            <td>
-                                <a href="{{ route('tickets.ver', $ticket->id) }}" 
-                                   class="btn btn-outline-primary btn-sm">
-                                    <i class="bi bi-eye"></i> Ver
-                                </a>
-                            </td>
+                            <th>Radicado</th>
+                            <th>Título</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acción</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endif
+                    </thead>
+                    <tbody>
+                        @foreach ($historialTickets as $ticket)
+                            <tr>
+                                <td><strong>{{ $ticket->radicado ?? '—' }}</strong></td>
+                                <td>{{ $ticket->titulo }}</td>
+                                <td>
+                                    <span class="badge 
+                                        @if($ticket->estado->nombre == 'Pendiente') bg-warning text-dark
+                                        @elseif($ticket->estado->nombre == 'En Proceso') bg-info text-dark
+                                        @elseif($ticket->estado->nombre == 'Resuelto') bg-success
+                                        @else bg-secondary @endif">
+                                        {{ $ticket->estado->nombre }}
+                                    </span>
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($ticket->fecha_creacion)->format('Y-m-d') }}</td>
+                                <td>
+                                    <a href="{{ route('tickets.ver', $ticket->id) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-eye"></i> Ver
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
     </div>
 </div>
-
+@endsection

@@ -29,7 +29,7 @@ Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
-    if (! $user) {
+    if (!$user) {
         return redirect()->route('login');
     }
 
@@ -84,11 +84,9 @@ Route::middleware(['auth'])->group(function () {
 // 🟢 PANEL USUARIO (TICKETS)
 // =======================
 Route::middleware(['auth'])->group(function () {
-    // ✅ Controlador centralizado con filtros y contadores
     Route::get('/usuario/dashboard_usuario', [UsuarioDashboardController::class, 'index'])
         ->name('usuario.dashboard_usuario');
 
-    // ✅ Crear y ver tickets
     Route::get('/tickets/nuevo', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
     Route::get('/tickets/{id}/ver', [TicketController::class, 'show'])->name('tickets.ver');

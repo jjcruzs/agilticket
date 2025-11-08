@@ -19,7 +19,7 @@
                 </span>
             </p>
             <p><strong>Creado:</strong> {{ $ticket->created_at->format('Y-m-d H:i') }}</p>
-            <a href="{{ route('usuario.dashboard') }}" class="btn btn-outline-secondary mt-3">
+            <a href="{{ route('usuario.dashboard_usuario') }}" class="btn btn-outline-secondary mt-3">
                 <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
             </a>
         </div>
