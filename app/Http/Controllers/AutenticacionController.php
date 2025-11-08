@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -24,11 +24,11 @@ class AutenticacionController extends Controller
             $usuario = Auth::user();
 
             switch ($usuario->rol_id) {
-                case 1: // Administrador
+                case 1:
                     return redirect()->route('admin.dashboard');
-                case 2: // Usuario normal
+                case 2:
                     return redirect()->route('usuario.dashboard_usuario');
-                case 3: // Soporte
+                case 3:
                     return redirect()->route('soporte.dashboard');
                 default:
                     Auth::logout();
@@ -41,7 +41,6 @@ class AutenticacionController extends Controller
 
     public function showRegister()
     {
-        // ❌ Ya no se envían roles a la vista
         return view('autenticacion.register');
     }
 
@@ -53,12 +52,11 @@ class AutenticacionController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // 🔹 Crear usuario con rol_id = 2 (Usuario por defecto)
-        $usuario = User::create([
+        $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'correo' => $request->correo,
             'password' => Hash::make($request->password),
-            'rol_id' => 2,
+            'rol_id' => 2, // Usuario por defecto
         ]);
 
         Auth::login($usuario);

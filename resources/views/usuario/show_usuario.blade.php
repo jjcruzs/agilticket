@@ -4,7 +4,7 @@
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold">Detalle del Ticket #{{ $ticket->id }}</h2>
-        <a href="{{ route('admin.tickets') }}" class="btn btn-purple">← Volver</a>
+        <a href="{{ route('usuario.dashboard_usuario') }}" class="btn btn-purple">← Volver</a>
     </div>
 
     <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
@@ -53,20 +53,19 @@
     <h4 class="mb-3">Respuestas</h4>
     @if($ticket->respuestas->count() > 0)
         @foreach($ticket->respuestas as $respuesta)
-            <div class="card border-start border-4 border-primary shadow-sm mb-3">
-    <div class="card-body">
-        <h6 class="mb-2 text-dark fw-semibold">
-            {{ $respuesta->usuario->nombre }} <span class="text-muted fw-normal">dijo:</span>
-        </h6>
-        <p class="mb-2 fs-5 text-body">{{ $respuesta->contenido }}</p>
-        <p class="mb-0 text-primary fw-semibold small">{{ $respuesta->created_at->format('d/m/Y H:i') }}</p>
-    </div>
-</div>
+            <div class="mb-3 p-3 border rounded bg-light">
+                <p><strong>{{ $respuesta->usuario->nombre }}</strong> dijo:</p>
+                <p>{{ $respuesta->contenido }}</p>
+                <small class="text-muted">
+                    {{ $respuesta->created_at ? $respuesta->created_at->timezone('America/Bogota')->format('d/m/Y H:i') : 'Fecha desconocida' }}
+                </small>
+            </div>
         @endforeach
     @else
         <p class="text-muted">Aún no hay respuestas para este ticket.</p>
     @endif
 
+    {{-- 
     <div class="card shadow-sm border-0 rounded-4 p-4 mt-4">
         <h5 class="fw-semibold mb-3">Responder al Ticket</h5>
         <form action="{{ route('tickets.responder', $ticket->id) }}" method="POST">
@@ -91,5 +90,6 @@
             <button type="submit" class="btn btn-primary rounded-pill px-4">Enviar respuesta</button>
         </form>
     </div>
+    --}}
 </div>
 @endsection

@@ -4,17 +4,28 @@
 <div class="card shadow-sm border-0">
     <div class="card-body p-5">
 
-    
+        @php
+            use Illuminate\Support\Facades\Auth;
+
+            $rol = strtolower(Auth::user()->rol->nombre ?? '');
+            if (in_array($rol, ['admin', 'administrador'])) {
+                $rutaDashboard = route('admin.dashboard');
+            } elseif ($rol === 'soporte') {
+                $rutaDashboard = route('soporte.dashboard');
+            } else {
+                $rutaDashboard = route('usuario.dashboard_usuario'); // Dashboard de usuario
+            }
+        @endphp
+
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-dark mb-0">Crear Nuevo Ticket</h3>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-purple">← Volver</a>
+            <a href="{{ $rutaDashboard }}" class="btn btn-purple">← Volver</a>
         </div>
 
         <p class="text-muted mb-4">
             Complete la información para crear un nuevo ticket de soporte.
         </p>
 
-  
         <form id="formNuevoTicket" action="{{ route('tickets.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -91,7 +102,6 @@
                 if (confirm("¿Deseas borrar todos los campos del formulario?")) {
                     form.reset();
 
-             
                     const inputsFile = form.querySelectorAll('input[type="file"]');
                     inputsFile.forEach(input => {
                         input.value = null;
@@ -102,5 +112,3 @@
     });
 </script>
 @endsection
-
-
