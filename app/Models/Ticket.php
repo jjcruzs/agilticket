@@ -16,6 +16,7 @@ class Ticket extends Model
     const UPDATED_AT = 'fecha_actualizacion';
 
     protected $fillable = [
+        'radicado',
         'titulo',
         'descripcion',
         'prioridad',

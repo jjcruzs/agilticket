@@ -11,9 +11,12 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketController extends Controller
 {
+
     public function index(Request $request)
     {
         $estadoFiltro = $request->input('estado_id');
+        $responsableFiltro = $request->input('responsable_id');
+        $radicadoFiltro = $request->input('radicado');
 
         $tickets = Ticket::with(['estado', 'solicitante', 'responsable'])
             ->when($estadoFiltro, fn($q) => $q->where('estado_id', $estadoFiltro))
@@ -21,14 +24,18 @@ class TicketController extends Controller
             ->get();
 
         $estados = Estado::all();
+        $responsables = Usuario::where('rol_id', 3)->get();
 
-        return view('autenticacion.tickets', compact('tickets', 'estados', 'estadoFiltro'));
+        return view('autenticacion.tickets', compact(
+            'tickets', 'estados', 'responsables', 
+            'estadoFiltro', 'responsableFiltro', 'radicadoFiltro'
+        ));
     }
 
     public function create()
     {
         $estados = Estado::all();
-        $usuarios = Usuario::all();
+        $usuarios = Usuario::where('rol_id', 3)->get();
 
         return view('autenticacion.nuevo_ticket', compact('estados', 'usuarios'));
     }
@@ -48,6 +55,7 @@ class TicketController extends Controller
         $nuevoRadicado = 'TCK-' . str_pad(($ultimoTicket?->id ?? 0) + 1, 4, '0', STR_PAD_LEFT);
 
         Ticket::create([
+            'radicado' => $radicado,
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'prioridad' => $request->prioridad,
@@ -111,6 +119,9 @@ class TicketController extends Controller
         $request->validate([
             'estado_id' => 'nullable|exists:estados,id',
             'responsable_id' => 'nullable|exists:usuarios,id',
+            'titulo' => 'nullable|string|max:255',
+            'descripcion' => 'nullable|string',
+            'prioridad' => 'nullable|string',
         ]);
 
         $ticket->update($request->only(['estado_id', 'responsable_id']));
