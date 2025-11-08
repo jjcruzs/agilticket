@@ -90,7 +90,6 @@
         >
             @csrf
 
-            <!-- Campo oculto para evitar sugerencias de autocompletado -->
             <input type="password" style="display:none">
 
             <div class="mb-3 text-start">
@@ -148,7 +147,7 @@
                 <span class="toggle-password" onclick="togglePassword(this)"></span>
             </div>
 
-            <!-- 👇 Campo oculto que asigna el rol automáticamente como "Usuario" -->
+            
             <input type="hidden" name="rol_id" value="2">
 
             <button type="submit" class="btn btn-register w-100 py-2">Registrarme</button>

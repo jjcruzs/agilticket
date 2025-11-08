@@ -24,12 +24,12 @@ class AutenticacionController extends Controller
             $usuario = Auth::user();
 
             switch ($usuario->rol_id) {
-                case 1: // Administrador
+                case 1:
                     return redirect()->route('admin.dashboard');
-                case 2: // Usuario normal
+                case 2:
                     return redirect()->route('usuario.dashboard_usuario');
-                case 3: // Soporte
-                    return redirect()->route('soporte.dashboard');
+                case 3:
+                    return redirect()->route('soporte.dashboard_soporte');
                 default:
                     Auth::logout();
                     return redirect()->route('login')->withErrors(['error' => 'Rol no válido']);
@@ -40,8 +40,7 @@ class AutenticacionController extends Controller
     }
 
     public function showRegister()
-    {
-        // ❌ Ya no se envían roles a la vista
+    {        
         return view('autenticacion.register');
     }
 
@@ -52,8 +51,7 @@ class AutenticacionController extends Controller
             'correo' => 'required|string|email|max:255|unique:usuarios,correo',
             'password' => 'required|string|min:6|confirmed',
         ]);
-
-        // 🔹 Crear usuario con rol_id = 2 (Usuario por defecto)
+        
         $usuario = User::create([
             'nombre' => $request->nombre,
             'correo' => $request->correo,

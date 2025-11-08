@@ -26,9 +26,6 @@ class Ticket extends Model
         'responsable_id',
     ];
 
-    // ==========================
-    // 🔹 GENERAR RADICADO AUTO (TCK-0001, TCK-0002, etc.)
-    // ==========================
     protected static function boot()
     {
         parent::boot();
@@ -39,10 +36,6 @@ class Ticket extends Model
             $ticket->radicado = 'TCK-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
         });
     }
-
-    // ==========================
-    // 🔹 RELACIONES
-    // ==========================
 
     public function respuestas()
     {
