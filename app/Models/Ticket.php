@@ -10,7 +10,6 @@ class Ticket extends Model
     use HasFactory;
 
     protected $table = 'tickets';
-
     public $timestamps = true;
 
     const CREATED_AT = 'fecha_creacion';
@@ -24,16 +23,17 @@ class Ticket extends Model
         'estado_id',
         'solicitante_id',
         'responsable_id',
+        'radicado',
     ];
 
     protected static function boot()
     {
-        parent::boot();
-
         static::creating(function ($ticket) {
-            $ultimo = self::latest('id')->first();
-            $numero = $ultimo ? $ultimo->id + 1 : 1;
-            $ticket->radicado = 'TCK-' . str_pad($numero, 4, '0', STR_PAD_LEFT);
+            if (empty($ticket->radicado)) {
+                $ultimo = self::max('id') ?? 0;
+                $nuevoNumero = str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
+                $ticket->radicado = 'TCK-' . $nuevoNumero;
+            }
         });
     }
 

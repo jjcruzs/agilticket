@@ -4,9 +4,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UsuarioDashboardController;
 use App\Http\Controllers\AutenticacionController;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\UsuarioDashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Models\Ticket;
 
 
 Route::get('/', function () {
@@ -24,7 +24,7 @@ Route::post('/logout', [AutenticacionController::class, 'logout'])->name('logout
 Route::get('/dashboard', function () {
     $user = Auth::user();
 
-    if (! $user) {
+    if (!$user) {
         return redirect()->route('login');
     }
 
@@ -44,6 +44,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
+    // 🔹 Gestión de usuarios
     Route::get('/admin/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
     Route::get('/admin/usuarios/crear', [AdminController::class, 'crearUsuario'])->name('admin.usuarios.crear');
     Route::post('/admin/usuarios', [AdminController::class, 'guardarUsuario'])->name('admin.usuarios.guardar');
@@ -51,6 +52,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/usuarios/{id}', [AdminController::class, 'actualizarUsuario'])->name('admin.usuarios.actualizar');
     Route::delete('/admin/usuarios/{id}', [AdminController::class, 'eliminarUsuario'])->name('admin.usuarios.eliminar');
 
+    // 🔹 Gestión de tickets (admin)
     Route::get('/admin/tickets', [TicketController::class, 'index'])->name('admin.tickets');
     Route::get('/admin/tickets/nuevo', [TicketController::class, 'createAdmin'])->name('admin.tickets.nuevo');
     Route::post('/admin/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
@@ -60,6 +62,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/admin/tickets/{id}', [TicketController::class, 'destroy'])->name('tickets.destroy');
     Route::post('/admin/tickets/{id}/responder', [TicketController::class, 'responder'])->name('tickets.responder');
 
+    // 🔹 Reportes
     Route::get('/admin/reportes', [AdminController::class, 'reportForm'])->name('admin.reportes');
     Route::post('/admin/reportes/generar', [AdminController::class, 'generateReport'])->name('admin.reportes.generar');
 });
