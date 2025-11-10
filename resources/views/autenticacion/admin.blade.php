@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Panel del Administrador - AgilTicket</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+ 
     <style>
         body {
             background-color: #f8f9fa;
@@ -38,11 +38,12 @@
     </style>
 </head>
 <body>
-
+ 
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">AgilTicket</a>
-            <div class="d-flex align-items-center">
+            <a class="navbar-brand d-flex align-items-center ms-5" href="{{ route('admin.dashboard') }}">
+                <img src="{{ asset('images/logo3.png') }}" alt="Logo" width="60" height="55" class="me-2">AgilTicket</a>
+            <div class="navbar-brand d-flex align-items-center ms-5">
                 <div class="text-white me-3 text-end">
                     <strong>{{ Auth::user()->nombre }}</strong><br>
                     <small>{{ Auth::user()->rol->nombre ?? 'Sin rol' }}</small>
@@ -68,10 +69,8 @@
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.tickets.nuevo') }}">Nuevo Ticket</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.tickets') }}">Tickets</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ route('admin.usuarios') }}">Usuarios</a></li>
-            <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.reportes') ? 'active' : '' }}" href="{{ route('admin.reportes') }}">Reportes</a>
-    </li>
+            <li class="nav-item"><a class="nav-link {{ request()->routeIs('admin.reportes') ? 'active' : '' }}" href="{{ route('admin.reportes') }}">Reportes</a></li>
         </ul>
-
 
         <div class="row text-center mb-4">
             <div class="col-md-3">
@@ -102,40 +101,40 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Tickets Recientes</h4>
-            <a href="{{ route('admin.tickets.nuevo') }}" class="btn fw-semibold rounded-pill px-3 text-white" style="background-color: #4f46e5;">Crear Ticket</a>
+            <!-- 🔹 BOTÓN MODIFICADO -->
+            <a href="{{ route('admin.tickets.nuevo') }}" class="btn btn-primary">Crear Ticket</a>
         </div>
 
         @foreach ($recientes as $ticket)
-    <div class="ticket-card">
-        <strong>{{ $ticket->radicado ?? 'Sin radicado' }}</strong> — {{ $ticket->titulo }} <br>
-        <small>
-            Creado por: {{ $ticket->solicitante->nombre ?? 'Desconocido' }} • 
-            {{ $ticket->fecha_creacion ? \Carbon\Carbon::parse($ticket->fecha_creacion)->format('d/m/Y') : $ticket->created_at->format('d/m/Y') }}
-        </small><br>
-        <small>Asignado a: {{ $ticket->responsable->nombre ?? 'Sin asignar' }}</small>
-        <div class="mt-2">
-            @php
-                $colorPrioridad = match($ticket->prioridad) {
-                    'Alta' => 'danger',
-                    'Media' => 'warning text-dark',
-                    'Baja' => 'success',
-                    default => 'secondary'
-                };
+            <div class="ticket-card">
+                <strong>{{ $ticket->radicado ?? 'Sin radicado' }}</strong> — {{ $ticket->titulo }} <br>
+                <small>
+                    Creado por: {{ $ticket->solicitante->nombre ?? 'Desconocido' }} • 
+                    {{ $ticket->fecha_creacion ? \Carbon\Carbon::parse($ticket->fecha_creacion)->format('d/m/Y') : $ticket->created_at->format('d/m/Y') }}
+                </small><br>
+                <small>Asignado a: {{ $ticket->responsable->nombre ?? 'Sin asignar' }}</small>
+                <div class="mt-2">
+                    @php
+                        $colorPrioridad = match($ticket->prioridad) {
+                            'Alta' => 'danger',
+                            'Media' => 'warning text-dark',
+                            'Baja' => 'success',
+                            default => 'secondary'
+                        };
 
-                $nombreEstado = $ticket->estado->nombre ?? 'Sin estado';
-                $colorEstado = match($nombreEstado) {
-                    'Pendiente' => 'warning text-dark',
-                    'En Proceso' => 'info text-dark',
-                    'Resuelto' => 'success',
-                    default => 'secondary'
-                };
-            @endphp
-            <span class="badge bg-{{ $colorPrioridad }}">{{ $ticket->prioridad }}</span>
-            <span class="badge bg-{{ $colorEstado }}">{{ $nombreEstado }}</span>
-        </div>
-    </div>
-@endforeach
-
+                        $nombreEstado = $ticket->estado->nombre ?? 'Sin estado';
+                        $colorEstado = match($nombreEstado) {
+                            'Pendiente' => 'warning text-dark',
+                            'En Proceso' => 'info text-dark',
+                            'Resuelto' => 'success',
+                            default => 'secondary'
+                        };
+                    @endphp
+                    <span class="badge bg-{{ $colorPrioridad }}">{{ $ticket->prioridad }}</span>
+                    <span class="badge bg-{{ $colorEstado }}">{{ $nombreEstado }}</span>
+                </div>
+            </div>
+        @endforeach
 
         @if ($recientes->isEmpty())
             <div class="alert alert-info">No hay tickets recientes.</div>
@@ -144,28 +143,26 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    {{-- SweetAlert para mostrar el número de radicado --}}
-@if (session('radicado'))
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var radicado = "{{ addslashes(session('radicado')) }}";
-            Swal.fire({
-                title: '✅ Ticket creado exitosamente',
-                html: '<strong>Número de radicado:</strong><br><h3>' + radicado + '</h3>',
-                icon: 'success',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#4f46e5',
-                allowOutsideClick: false,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('admin.dashboard') }}";
-                }
+    @if (session('radicado'))
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var radicado = "{{ addslashes(session('radicado')) }}";
+                Swal.fire({
+                    title: '✅ Ticket creado exitosamente',
+                    html: '<strong>Número de radicado:</strong><br><h3>' + radicado + '</h3>',
+                    icon: 'success',
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: '#4f46e5',
+                    allowOutsideClick: false,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('admin.dashboard') }}";
+                    }
+                });
             });
-        });
-    </script>
-@endif
-
+        </script>
+    @endif
 
 </body>
 </html>

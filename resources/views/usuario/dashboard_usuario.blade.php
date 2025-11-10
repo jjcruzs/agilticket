@@ -1,5 +1,5 @@
 @extends('layouts.app')
- 
+
 @section('content')
 <div class="container mt-4">
     
@@ -11,8 +11,8 @@
             <i class="bi bi-plus-circle me-1"></i> Nuevo Ticket
         </a>
     </div>
- 
-    
+
+    {{-- CONTADORES --}}
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-warning shadow-sm">
@@ -47,39 +47,29 @@
             </div>
         </div>
     </div>
- 
-    
+
+    {{-- SECCIÓN CREAR TICKET --}}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-success text-white fw-semibold">
             <i class="bi bi-pencil-square me-2"></i> Crear Ticket
         </div>
         <div class="card-body">
             <p class="text-muted">
-                 <p> Bienvenido !! </p>
-                 Aqui puedes seleccionar <span class="text-primary">"Crear Ticket"</span>.<br>
-               
+                <p> ¡Bienvenido! </p>
+                Aquí puedes <span class="text-primary">"Crear un Ticket"</span>.<br>
             </p>
             <a href="{{ route('tickets.create') }}" class="btn btn-success">
                 <i class="bi bi-plus-circle me-1"></i> Ir a Crear Ticket
             </a>
         </div>
     </div>
- 
-    
+
+    {{-- SECCIÓN TICKETS RECIENTES --}}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white fw-semibold">
             <i class="bi bi-search me-2"></i> Mis Tickets
         </div>
         <div class="card-body">
-            <p class="text-muted mb-3">
-             
- 
- 
- 
- 
-            </p>
- 
-            
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-primary text-white fw-semibold">
                     <i class="bi bi-ticket-detailed me-2"></i> Tickets Recientes
@@ -120,8 +110,8 @@
             </div>
         </div>
     </div>
- 
-    
+
+    {{-- HISTORIAL DE TICKETS --}}
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-dark text-white fw-semibold">
             <i class="bi bi-clock-history me-2"></i> Historial de Tickets
@@ -130,10 +120,14 @@
             <form method="GET" action="{{ route('usuario.dashboard_usuario') }}">
                 <div class="row g-3 mb-3">
                     <div class="col-md-3">
+                        <input type="text" name="radicado" class="form-control"
+                            placeholder="Buscar por radicado..." value="{{ $radicado }}">
+                    </div>
+                    <div class="col-md-3">
                         <input type="text" name="titulo" class="form-control"
                             placeholder="Buscar por título..." value="{{ $titulo }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <select name="estado_id" class="form-select">
                             <option value="">Filtrar por estado</option>
                             @foreach($estados as $estado)
@@ -143,17 +137,17 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <input type="date" name="fecha" class="form-control" value="{{ $fecha }}">
                     </div>
-                    <div class="col-md-3 text-end">
-                        <button type="submit" class="btn btn-primary">
+                    <div class="col-md-2 text-end">
+                        <button type="submit" class="btn btn-primary w-100">
                             <i class="bi bi-funnel me-1"></i> Filtrar
                         </button>
                     </div>
                 </div>
             </form>
- 
+
             @if($historialTickets->isEmpty())
                 <div class="alert alert-info text-center">
                     <i class="bi bi-info-circle me-2"></i> No se encontraron tickets con los filtros aplicados.
@@ -198,4 +192,26 @@
         </div>
     </div>
 </div>
+
+{{-- 🔹 ALERTA SWEETALERT PARA CUANDO SE CREA UN TICKET --}}
+@if (session('radicado'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var radicado = "{{ addslashes(session('radicado')) }}";
+            Swal.fire({
+                title: '✅ Ticket creado exitosamente',
+                html: '<strong>Número de radicado:</strong><br><h3>' + radicado + '</h3>',
+                icon: 'success',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#0d6efd',
+                allowOutsideClick: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('usuario.dashboard_usuario') }}";
+                }
+            });
+        });
+    </script>
+@endif
 @endsection

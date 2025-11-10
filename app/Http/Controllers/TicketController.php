@@ -1,159 +1,182 @@
 <?php
-
+ 
 namespace App\Http\Controllers;
-
+ 
 use App\Models\Estado;
 use App\Models\Respuesta;
 use App\Models\Ticket;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+ 
 class TicketController extends Controller
-{    
+{
     public function index(Request $request)
     {
         $estadoFiltro = $request->input('estado_id');
         $responsableFiltro = $request->input('responsable_id');
         $radicadoFiltro = $request->input('radicado');
-
+ 
         $tickets = Ticket::with(['estado','solicitante','responsable'])
             ->when($estadoFiltro, fn($q) => $q->where('estado_id', $estadoFiltro))
             ->when($responsableFiltro, fn($q) => $q->where('responsable_id', $responsableFiltro))
             ->when($radicadoFiltro, fn($q) => $q->where('radicado','like',"%$radicadoFiltro%"))
             ->latest()
             ->get();
-
+ 
         $estados = Estado::all();
         $responsables = Usuario::where('rol_id',3)->get();
-
-        return view('autenticacion.tickets', compact('tickets','estados','responsables','estadoFiltro','responsableFiltro','radicadoFiltro'));
+ 
+        return view('autenticacion.tickets', compact(
+            'tickets', 'estados', 'responsables',
+            'estadoFiltro', 'responsableFiltro', 'radicadoFiltro'
+        ));
     }
-    
-    public function create()
-    {
-        $estados = Estado::all();
-        $usuarios = Usuario::where('rol_id',3)->get(); 
+   
+   public function createAdmin()
+{
+    $estados = Estado::all();
+    $usuarios = Usuario::where('rol_id', 1)->get(); 
+    return view('autenticacion.nuevo_ticket', compact('estados', 'usuarios'));
+}
 
-        return view('autenticacion.nuevo_ticket', compact('estados','usuarios'));
-    }
+public function createUsuario()
+{
+    $estados = Estado::all();
+    $usuarios = Usuario::where('rol_id', 3)->get(); 
+    return view('tickets.create', compact('estados', 'usuarios'));
+}
 
+ 
     public function store(Request $request)
     {
-        $request->validate([
-            'titulo' => 'required|string|max:255',
-            'descripcion' => 'required|string',
-            'prioridad' => 'required|string',
-            'estado_id' => 'required|exists:estados,id',
-            'responsable_id' => 'nullable|exists:usuarios,id',
-        ]);
-        
-        $ultimoTicket = Ticket::latest('id')->first();
-        $nuevoRadicado = 'TCK-' . str_pad(($ultimoTicket?->id ?? 0) + 1, 4, '0', STR_PAD_LEFT);
-
-        Ticket::create([
-            'titulo' => $request->titulo,
-            'descripcion' => $request->descripcion,
-            'prioridad' => $request->prioridad,
-            'estado_id' => $request->estado_id,
-            'solicitante_id' => Auth::id(),
-            'responsable_id' => $request->responsable_id,
-            'radicado' => $nuevoRadicado,
-        ]);
-
-        $rol = strtolower(Auth::user()->rol->nombre ?? '');
-
-        if (in_array($rol, ['admin','administrador'])) {
-            return redirect()->route('admin.dashboard')->with('success','Ticket creado exitosamente.');
-        } elseif ($rol === 'soporte') {
-            return redirect()->route('soporte.dashboard')->with('success','Ticket creado exitosamente.');
-        } else {
-            return redirect()->route('usuario.dashboard_usuario')->with('success','Ticket creado exitosamente.');
-        }
+    $request->validate([
+        'titulo' => 'required|string|max:255',
+        'descripcion' => 'required|string',
+        'prioridad' => 'required|string',
+        'estado_id' => 'required|exists:estados,id',
+        'responsable_id' => 'nullable|exists:usuarios,id',
+    ]);
+ 
+    $ultimo = Ticket::latest('id')->first();
+    $nuevoNumero = $ultimo ? $ultimo->id + 1 : 1;
+    $radicado = 'TCK-' . str_pad($nuevoNumero, 4, '0', STR_PAD_LEFT);
+ 
+    Ticket::create([
+        'radicado' => $radicado,
+        'titulo' => $request->titulo,
+        'descripcion' => $request->descripcion,
+        'prioridad' => $request->prioridad,
+        'estado_id' => $request->estado_id,
+        'solicitante_id' => Auth::user()->id,
+        'responsable_id' => $request->responsable_id,
+    ]);
+ 
+    $rol = strtolower(Auth::user()->rol->nombre ?? '');
+ 
+    if (in_array($rol, ['admin', 'administrador'])) {
+        return redirect()
+            ->route('admin.dashboard')
+            ->with('success', 'Ticket creado exitosamente.')
+            ->with('radicado', $radicado);
+    } elseif ($rol === 'soporte') {
+        return redirect()
+            ->route('soporte.dashboard')
+            ->with('success', 'Ticket creado exitosamente.')
+            ->with('radicado', $radicado);
+    } else {
+        return redirect()
+            ->route('usuario.dashboard_usuario')
+            ->with('success', 'Ticket creado exitosamente.')
+            ->with('radicado', $radicado);
     }
-    
-    public function showAdmin($id)
+    }
+ 
+    public function show($id)
     {
         $ticket = Ticket::with(['estado','solicitante','responsable','respuestas.usuario','respuestas.estado'])
                         ->findOrFail($id);
-
+ 
         $estados = Estado::all();
-
+ 
         return view('tickets.show', compact('ticket','estados'));
     }
-    
+   
     public function showUsuario($id)
 {
     $ticket = Ticket::with(['estado','solicitante','responsable','respuestas.usuario','respuestas.estado'])
                     ->findOrFail($id);
-
+ 
     $usuario = Auth::user();
-    
+   
     $rolesPermitidos = ['admin','administrador','soporte'];
     if ($ticket->solicitante_id != $usuario->id && !in_array(strtolower($usuario->rol->nombre ?? ''), $rolesPermitidos)) {
         abort(403,'No tienes permiso para ver este ticket.');
     }
-
+ 
     return view('usuario.show_usuario', compact('ticket'));
 }
-
-
+ 
+ 
     public function edit($id)
     {
-        $ticket = Ticket::with(['solicitante','responsable'])->findOrFail($id);
-        $usuarios = Usuario::where('rol_id',3)->get();
-
+        $ticket = Ticket::with(['solicitante', 'responsable', 'estado'])->findOrFail($id);
+        $estados = Estado::all();
+        $usuarios = Usuario::where('rol_id', 3)->get();
+ 
         return view('tickets.edit', compact('ticket','usuarios'));
     }
-
+ 
     public function update(Request $request, $id)
     {
         $ticket = Ticket::findOrFail($id);
-
+ 
         $request->validate([
             'estado_id' => 'nullable|exists:estados,id',
             'responsable_id' => 'nullable|exists:usuarios,id',
             'titulo' => 'nullable|string|max:255',
             'descripcion' => 'nullable|string',
             'prioridad' => 'nullable|string',
+            'categoria_id' => 'nullable|integer',
         ]);
-
+ 
         $ticket->update([
             'titulo' => $request->titulo ?? $ticket->titulo,
             'descripcion' => $request->descripcion ?? $ticket->descripcion,
             'prioridad' => $request->prioridad ?? $ticket->prioridad,
             'estado_id' => $request->estado_id ?? $ticket->estado_id,
             'responsable_id' => $request->responsable_id ?? $ticket->responsable_id,
+            'categoria_id' => $request->categoria_id ?? $ticket->categoria_id,
         ]);
-
+ 
         return redirect()->route('admin.tickets')->with('success','Ticket actualizado correctamente.');
     }
-
+ 
     public function destroy($id)
     {
         Ticket::findOrFail($id)->delete();
-
+ 
         return redirect()->route('admin.tickets')->with('success','Ticket eliminado correctamente.');
     }
-    
+   
     public function responder(Request $request, $ticketId)
     {
         $request->validate([
             'respuesta' => 'required|string|max:2000',
             'estado_id' => 'required|exists:estados,id',
         ]);
-
+ 
         $ticket = Ticket::findOrFail($ticketId);
-
+ 
         Respuesta::create([
             'ticket_id' => $ticket->id,
             'usuario_id' => Auth::id(),
             'estado_id' => $request->estado_id,
             'contenido' => $request->respuesta,
         ]);
-
+ 
         $ticket->update(['estado_id' => $request->estado_id]);
-
+ 
         return redirect()->back()->with('success','Respuesta agregada correctamente.');
     }
 }
