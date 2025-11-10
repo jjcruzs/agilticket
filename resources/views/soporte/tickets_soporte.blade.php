@@ -7,14 +7,13 @@
         <a href="{{ route('soporte.dashboard_soporte') }}" class="btn btn-purple">← Volver</a>
     </div>
 
-    {{-- Filtros --}}
     <form method="GET" action="{{ route('soporte.tickets') }}" class="mb-4 d-flex align-items-center gap-3 flex-wrap">
         <div>
             <label for="estado_id" class="form-label mb-1">Filtrar por Estado:</label>
             <select name="estado_id" id="estado_id" class="form-select">
                 <option value="">Todos</option>
                 @foreach($estados as $estado)
-                    <option value="{{ $estado->id }}" {{ ($estadoFiltro ?? '') == $estado->id ? 'selected' : '' }}>
+                    <option value="{{ $estado->id }}" {{ $estadoFiltro == $estado->id ? 'selected' : '' }}>
                         {{ $estado->nombre }}
                     </option>
                 @endforeach
@@ -26,7 +25,7 @@
             <select name="responsable_id" id="responsable_id" class="form-select">
                 <option value="">Todos</option>
                 @foreach($responsables as $responsable)
-                    <option value="{{ $responsable->id }}" {{ ($responsableFiltro ?? '') == $responsable->id ? 'selected' : '' }}>
+                    <option value="{{ $responsable->id }}" {{ $responsableFiltro == $responsable->id ? 'selected' : '' }}>
                         {{ $responsable->nombre }}
                     </option>
                 @endforeach
@@ -36,7 +35,7 @@
         <div>
             <label for="radicado" class="form-label mb-1">Buscar por Radicado:</label>
             <input type="text" name="radicado" id="radicado" class="form-control"
-                placeholder="Ej: TCK-0003" value="{{ $radicadoFiltro ?? '' }}">
+                placeholder="Ej: TCK-0003" value="{{ $radicadoFiltro }}">
         </div>
 
         <div class="align-self-end">
@@ -45,7 +44,6 @@
         </div>
     </form>
 
-    {{-- Tabla de tickets --}}
     <div class="card shadow-sm border-0 rounded-4 p-4">
         <table class="table align-middle">
             <thead>
@@ -82,6 +80,7 @@
                             @php
                                 $nombreEstado = $ticket->estado->nombre ?? 'Sin estado';
                             @endphp
+
                             <span class="badge 
                                 @if($nombreEstado == 'Pendiente') bg-info 
                                 @elseif($nombreEstado == 'En Proceso') bg-primary 
@@ -98,7 +97,6 @@
 
                         <td>
                             <div class="d-flex justify-content-center gap-2">
-                                {{-- Solo botón Ver para soporte --}}
                                 <a href="{{ route('soporte.tickets.show', $ticket->id) }}" 
                                    class="btn btn-sm btn-info text-white rounded-pill px-3">
                                    Ver

@@ -1,86 +1,95 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-4">
-
+<div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark mb-0">Detalle del Ticket #{{ $ticket->id }}</h3>
-        <a href="{{ route('soporte.tickets') }}" class="btn btn-secondary">← Volver al listado</a>
+        <h2 class="fw-bold">Detalle del Ticket #{{ $ticket->id }}</h2>
+        <a href="{{ route('soporte.dashboard_soporte') }}" class="btn btn-purple">← Volver</a>
     </div>
 
-    {{-- Información principal del ticket --}}
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <h5 class="fw-bold text-primary mb-3">{{ $ticket->titulo }}</h5>
-            <p class="mb-2"><strong>Descripción:</strong></p>
-            <p class="text-muted">{{ $ticket->descripcion }}</p>
+    <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+        <h4 class="mb-3">{{ $ticket->titulo }}</h4>
 
-            <div class="row mt-3">
-                <div class="col-md-3">
-                    <strong>Prioridad:</strong>
-                    <span class="badge bg-{{ 
-                        $ticket->prioridad === 'Alta' ? 'danger' : 
-                        ($ticket->prioridad === 'Media' ? 'warning text-dark' : 'success')
-                    }}">{{ $ticket->prioridad }}</span>
-                </div>
-                <div class="col-md-3">
-                    <strong>Estado:</strong>
-                    <span class="badge bg-info">{{ $ticket->estado->nombre ?? 'Sin estado' }}</span>
-                </div>
-                <div class="col-md-3">
-                    <strong>Solicitante:</strong> {{ $ticket->solicitante->nombre ?? 'Desconocido' }}
-                </div>
-                <div class="col-md-3">
-                    <strong>Responsable:</strong> {{ $ticket->responsable->nombre ?? 'Sin asignar' }}
+        <p><strong>Prioridad:</strong> 
+            <span class="badge 
+                @if($ticket->prioridad == 'Alta') bg-danger 
+                @elseif($ticket->prioridad == 'Media') bg-warning 
+                @else bg-success @endif
+                px-3 py-2 rounded-pill">
+                {{ ucfirst($ticket->prioridad) }}
+            </span>
+        </p>
+
+        <p><strong>Estado:</strong> 
+            <span class="badge 
+                @if($ticket->estado->nombre == 'Pendiente') bg-info 
+                @elseif($ticket->estado->nombre == 'En Proceso') bg-primary 
+                @elseif($ticket->estado->nombre == 'Resuelto') bg-success 
+                @else bg-secondary @endif
+                px-3 py-2 rounded-pill">
+                {{ $ticket->estado->nombre ?? 'Sin estado' }}
+            </span>
+        </p>
+
+        <p><strong>Solicitante:</strong> {{ $ticket->solicitante->nombre ?? 'Desconocido' }}</p>
+        <p><strong>Responsable:</strong> {{ $ticket->responsable->nombre ?? 'Sin asignar' }}</p>
+
+        <div class="mt-4">
+            <h5 class="fw-semibold">Descripción del problema</h5>
+            <p class="text-muted" style="white-space: pre-line;">{{ $ticket->descripcion ?? 'Sin descripción' }}</p>
+        </div>
+
+        <p class="mt-3 text-secondary">
+            <strong>Creado el:</strong> 
+            {{ $ticket->fecha_creacion ? $ticket->fecha_creacion->timezone('America/Bogota')->format('d/m/Y H:i') : 'Fecha desconocida' }}
+        </p>
+
+        <p class="text-secondary">
+            <strong>Última actualización:</strong> 
+            {{ $ticket->fecha_actualizacion ? $ticket->fecha_actualizacion->timezone('America/Bogota')->format('d/m/Y H:i') : 'Fecha desconocida' }}
+        </p>
+    </div>
+
+    <h4 class="mb-3">Respuestas</h4>
+    @if($ticket->respuestas->count() > 0)
+        @foreach($ticket->respuestas as $respuesta)
+            <div class="card border-start border-4 border-primary shadow-sm mb-3">
+                <div class="card-body">
+                    <h6 class="mb-2 text-dark fw-semibold">
+                        {{ $respuesta->usuario->nombre }} <span class="text-muted fw-normal">dijo:</span>
+                    </h6>
+                    <p class="mb-2 fs-5 text-body">{{ $respuesta->contenido }}</p>
+                    <p class="mb-0 text-primary fw-semibold small">{{ $respuesta->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
-        </div>
+        @endforeach
+    @else
+        <p class="text-muted">Aún no hay respuestas para este ticket.</p>
+    @endif
+
+    <div class="card shadow-sm border-0 rounded-4 p-4 mt-4">
+        <h5 class="fw-semibold mb-3">Responder al Ticket</h5>
+        <form action="{{ route('soporte.tickets.responder', $ticket->id) }}" method="POST">
+            @csrf
+
+            <div class="mb-3">
+                <label for="respuesta" class="form-label">Escribe tu respuesta o seguimiento</label>
+                <textarea name="respuesta" id="respuesta" class="form-control rounded-3" rows="4" placeholder="Escribe aquí la respuesta al usuario..." required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="estado_id" class="form-label">Actualizar Estado</label>
+                <select name="estado_id" id="estado_id" class="form-select rounded-3" required>
+                    @foreach($estados as $estado)
+                        <option value="{{ $estado->id }}" {{ $ticket->estado_id == $estado->id ? 'selected' : '' }}>
+                            {{ $estado->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary rounded-pill px-4">Enviar respuesta</button>
+        </form>
     </div>
-
-    {{-- Respuestas --}}
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-light fw-bold">Respuestas</div>
-        <div class="card-body">
-            @forelse ($ticket->respuestas as $respuesta)
-                <div class="border-bottom mb-3 pb-2">
-                    <div class="d-flex justify-content-between">
-                        <strong>{{ $respuesta->usuario->nombre ?? 'Usuario desconocido' }}</strong>
-                        <small class="text-muted">{{ \Carbon\Carbon::parse($respuesta->created_at)->format('d/m/Y H:i') }}</small>
-                    </div>
-                    <p class="mb-1">{{ $respuesta->contenido }}</p>
-                </div>
-            @empty
-                <p class="text-muted mb-0">No hay respuestas aún.</p>
-            @endforelse
-        </div>
-    </div>
-
-    {{-- Formulario para responder --}}
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-light fw-bold">Agregar respuesta</div>
-        <div class="card-body">
-            <form action="{{ route('soporte.tickets.responder', $ticket->id) }}" method="POST">
-                @csrf
-                <div class="mb-3">
-                    <label for="respuesta" class="form-label">Tu respuesta</label>
-                    <textarea name="respuesta" id="respuesta" rows="4" class="form-control" required></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label for="estado_id" class="form-label">Cambiar estado</label>
-                    <select name="estado_id" id="estado_id" class="form-select" required>
-                        @foreach ($estados as $estado)
-                            <option value="{{ $estado->id }}" {{ $estado->id == $ticket->estado_id ? 'selected' : '' }}>
-                                {{ $estado->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Responder</button>
-            </form>
-        </div>
-    </div>
-
 </div>
 @endsection
