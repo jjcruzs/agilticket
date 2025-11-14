@@ -34,20 +34,19 @@ class TicketController extends Controller
     }
    
    public function createAdmin()
-{
+    {
     $estados = Estado::all();
     $usuarios = Usuario::where('rol_id', 1)->get(); 
     return view('autenticacion.nuevo_ticket', compact('estados', 'usuarios'));
-}
+    }
 
-public function createUsuario()
-{
+    public function createUsuario()
+    {
     $estados = Estado::all();
     $usuarios = Usuario::where('rol_id', 3)->get(); 
     return view('tickets.create', compact('estados', 'usuarios'));
-}
+    }
 
- 
     public function store(Request $request)
     {
     $request->validate([
@@ -103,7 +102,7 @@ public function createUsuario()
     }
    
     public function showUsuario($id)
-{
+    {
     $ticket = Ticket::with(['estado','solicitante','responsable','respuestas.usuario','respuestas.estado'])
                     ->findOrFail($id);
  
@@ -115,7 +114,7 @@ public function createUsuario()
     }
  
     return view('usuario.show_usuario', compact('ticket'));
-}
+    }
  
  
     public function edit($id)

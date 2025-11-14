@@ -52,11 +52,11 @@ class AutenticacionController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
         
-        $usuario = User::create([
+        $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'correo' => $request->correo,
             'password' => Hash::make($request->password),
-            'rol_id' => 2, // Usuario por defecto
+            'rol_id' => 2,
         ]);
 
         Auth::login($usuario);

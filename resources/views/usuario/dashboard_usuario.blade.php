@@ -12,7 +12,6 @@
         </a>
     </div>
 
-    {{-- CONTADORES --}}
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-warning shadow-sm">
@@ -48,7 +47,6 @@
         </div>
     </div>
 
-    {{-- SECCIÓN CREAR TICKET --}}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-success text-white fw-semibold">
             <i class="bi bi-pencil-square me-2"></i> Crear Ticket
@@ -64,7 +62,6 @@
         </div>
     </div>
 
-    {{-- SECCIÓN TICKETS RECIENTES --}}
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white fw-semibold">
             <i class="bi bi-search me-2"></i> Mis Tickets
@@ -111,7 +108,6 @@
         </div>
     </div>
 
-    {{-- HISTORIAL DE TICKETS --}}
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-dark text-white fw-semibold">
             <i class="bi bi-clock-history me-2"></i> Historial de Tickets
@@ -193,7 +189,6 @@
     </div>
 </div>
 
-{{-- 🔹 ALERTA SWEETALERT PARA CUANDO SE CREA UN TICKET --}}
 @if (session('radicado'))
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>

@@ -71,7 +71,6 @@
             transform: translateY(-2px);
         }
 
-        /* 🔹 Panel Derecho */
         .right-panel {
             flex: 1;
             background: linear-gradient(135deg, #4f46e5, #6366f1);
@@ -80,7 +79,6 @@
             justify-content: center;
         }
 
-        /* 🔹 Tarjeta de Login */
         .login-card {
             width: 100%;
             max-width: 400px;
@@ -152,7 +150,6 @@
 </head>
 <body>
 
-    <!-- PANEL IZQUIERDO -->
     <div class="left-panel">
         <div class="left-panel-content">
             <h1>AgilTicket</h1>
@@ -162,7 +159,6 @@
         </div>
     </div>
 
-    <!-- PANEL DERECHO -->
     <div class="right-panel">
         <div class="login-card">
             <h2>Iniciar Sesión</h2>

@@ -64,7 +64,6 @@
             </div>
         @endif
 
-        {{-- 🔹 Pestañas de navegación --}}
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('soporte.dashboard_soporte') ? 'active' : '' }}" 
@@ -80,7 +79,6 @@
             </li>
         </ul>
 
-        {{-- 🔹 Tarjetas de estadísticas --}}
         <div class="row text-center mb-4">
             <div class="col-md-3">
                 <div class="card-stat">
@@ -108,7 +106,6 @@
             </div>
         </div>
 
-        {{-- 🔹 Tickets recientes --}}
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Tickets Recientes</h4>
         </div>

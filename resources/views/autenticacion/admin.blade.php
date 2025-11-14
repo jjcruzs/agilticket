@@ -101,7 +101,6 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4>Tickets Recientes</h4>
-            <!-- 🔹 BOTÓN MODIFICADO -->
             <a href="{{ route('admin.tickets.nuevo') }}" class="btn btn-primary">Crear Ticket</a>
         </div>
 

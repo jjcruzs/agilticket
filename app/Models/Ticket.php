@@ -28,13 +28,15 @@ class Ticket extends Model
 
     protected static function boot()
     {
-        static::creating(function ($ticket) {
-            if (empty($ticket->radicado)) {
-                $ultimo = self::max('id') ?? 0;
-                $nuevoNumero = str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
-                $ticket->radicado = 'TCK-' . $nuevoNumero;
-            }
-        });
+    parent::boot();
+
+    static::creating(function ($ticket) {
+        if (empty($ticket->radicado)) {
+            $ultimo = self::max('id') ?? 0;
+            $nuevoNumero = str_pad($ultimo + 1, 4, '0', STR_PAD_LEFT);
+            $ticket->radicado = 'TCK-' . $nuevoNumero;
+        }
+    });
     }
 
     public function respuestas()
