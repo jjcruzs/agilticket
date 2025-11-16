@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <!-- Encabezado -->
+   
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="fw-bold text-primary">
             <i class="bi bi-speedometer2 me-2"></i> Dashboard de Tickets (USUARIO)
@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    <!-- Resumen de tickets -->
+  
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-warning shadow-sm">
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    <!-- Sección: Crear Ticket -->
+   
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-success text-white fw-semibold">
             <i class="bi bi-pencil-square me-2"></i> Crear Ticket
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <!-- Sección: Mis Tickets -->
+   
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white fw-semibold">
             <i class="bi bi-search me-2"></i> Mis Tickets
@@ -79,7 +79,7 @@
 
             </p>
 
-            <!-- Tickets recientes -->
+          
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-primary text-white fw-semibold">
                     <i class="bi bi-ticket-detailed me-2"></i> Tickets Recientes
@@ -121,7 +121,7 @@
         </div>
     </div>
 
-    <!-- Módulo: Historial de Tickets con filtros -->
+   
     <div class="card shadow-sm mb-5">
         <div class="card-header bg-dark text-white fw-semibold">
             <i class="bi bi-clock-history me-2"></i> Historial de Tickets
