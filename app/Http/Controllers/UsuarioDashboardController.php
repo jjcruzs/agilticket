@@ -17,25 +17,25 @@ class UsuarioDashboardController extends Controller
             return redirect()->route('login');
         }
 
-        // 🟡 Filtros
+       
         $titulo = $request->input('titulo');
         $estadoFiltro = $request->input('estado_id');
         $fecha = $request->input('fecha');
 
-        // 🟢 Contadores
+      
         $pendientes = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 1)->count();
         $enProceso = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 2)->count();
         $resueltos = Ticket::where('solicitante_id', $usuario->id)->where('estado_id', 3)->count();
         $total = Ticket::where('solicitante_id', $usuario->id)->count();
 
-        // 🟢 Tickets recientes
+        
         $ticketsRecientes = Ticket::where('solicitante_id', $usuario->id)
             ->with('estado')
             ->latest('fecha_creacion')
             ->take(5)
             ->get();
 
-        // 🟢 Historial con filtros aplicados
+        
         $historialTickets = Ticket::where('solicitante_id', $usuario->id)
             ->with('estado')
             ->when($titulo, function ($query, $titulo) {
